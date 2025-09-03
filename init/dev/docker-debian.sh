@@ -22,7 +22,7 @@ sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin d
 
 # 确认用户在 docker 组
 if id -nG "$USER" | grep -qw docker; then
-    echo -e "\033[32m用户 $USER 已在 docker 组中，可以直接使用 docker\033[0m"
+    echo -e "\033[32m用户 $USER 已在 docker 组中，继续后续部署。\033[0m"
 else
     # 将当前用户加入 docker 组
     echo -e "\033[33m用户 $USER 不在 docker 组，正在添加...\033[0m"
