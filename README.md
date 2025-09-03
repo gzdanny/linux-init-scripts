@@ -54,24 +54,17 @@ usermod -aG sudo myuser
 
 ```
 linux-init-scripts/
-│
 ├── README.md                  # Project introduction
-├── init.sh                    # Entry script: detects OS, calls distro script
-├── init/
-│   ├── debian-init.sh         # Debian initialization
-│   ├── ubuntu-init.sh         # Ubuntu initialization (future)
-│   └── common.sh              # Shared functions
-└── utils/
-    ├── detect_os.sh           # OS detection logic
-    └── helper.sh              # Helper utilities
+├── init.sh                    # Entry script: detects OS, calls common.sh
+└── init/
+    └── common.sh             # Universal initialization script
 ```
 
 ---
 
 ## Planned Features
 
-* [ ] Add Ubuntu support
-* [ ] Add CentOS/Rocky Linux support
+* [ ] Add more Linux distributions (CentOS, Rocky Linux, etc.)
 * [ ] Optional arguments (e.g., `--no-firewall`)
 * [ ] Security enhancements (Fail2ban, SSH keys)
 
