@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 BASE_URL="https://raw.githubusercontent.com/gzdanny/linux-init-scripts/main"
 
 # 检测操作系统
@@ -22,9 +24,9 @@ OS=$(detect_os)
 echo "Detected OS: $OS"
 
 if [ "$OS" = "unsupported" ]; then
-    echo "Unsupported OS"
+    echo "Unsupported OS. Currently only Debian and Ubuntu are supported."
     exit 1
 fi
 
-# 下载并执行通用初始化脚本
+# 调用debian|ubuntu通用初始化脚本
 bash <(curl -fsSL ${BASE_URL}/init/common.sh) "$OS"
