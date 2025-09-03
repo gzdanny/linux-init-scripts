@@ -32,18 +32,26 @@ detect_os() {
 OS=$(detect_os)
 echo "Detected OS: $OS"
 
+# 执行脚本的函数，支持 curl 或 wget
+run_remote_script() {
+    local url="$1"
+    if command -v curl &>/dev/null; then
+        bash <(curl -fsSL "$url")
+    elif command -v wget &>/dev/null; then
+        bash <(wget -qO- "$url")
+    else
+        echo "Error: Neither curl nor wget is installed."
+        echo "Please install one of them manually and rerun this script."
+        exit 1
+    fi
+}
+
 case "$OS" in
-    debian)
-        bash <(curl -fsSL ${BASE_URL}/debian-init.sh)
+    debian|ubuntu)
+        run_remote_script "${BASE_URL}/debian-init.sh"
         ;;
-    ubuntu)
-        bash <(curl -fsSL ${BASE_URL}/debian-init.sh)  # Ubuntu 使用 Debian 脚本
-        ;;
-    centos)
-        bash <(curl -fsSL ${BASE_URL}/centos-init.sh)
-        ;;
-    rocky)
-        bash <(curl -fsSL ${BASE_URL}/centos-init.sh)  # Rocky 使用 CentOS 脚本
+    centos|rocky)
+        run_remote_script "${BASE_URL}/centos-init.sh"
         ;;
     *)
         echo "Unsupported OS"
