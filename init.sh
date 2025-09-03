@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-BASE_URL="https://raw.githubusercontent.com/gzdanny/linux-init-scripts/main"
+BASE_URL="https://raw.githubusercontent.com/gzdanny/linux-init-scripts/main/init"
 
 # 检测操作系统
 detect_os() {
@@ -10,6 +10,12 @@ detect_os() {
         case "$ID" in
             debian|ubuntu)
                 echo "$ID"
+                ;;
+            centos)
+                echo "centos"
+                ;;
+            rocky)
+                echo "rocky"
                 ;;
             *)
                 echo "unsupported"
@@ -28,5 +34,5 @@ if [ "$OS" = "unsupported" ]; then
     exit 1
 fi
 
-# 调用debian|ubuntu通用初始化脚本
-bash <(curl -fsSL ${BASE_URL}/init/common.sh) "$OS"
+# 调用通用初始化脚本
+bash <(curl -fsSL ${BASE_URL}/common.sh) "$OS"
