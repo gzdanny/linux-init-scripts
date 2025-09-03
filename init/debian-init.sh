@@ -29,6 +29,9 @@ else
     USERNAME=$(logname 2>/dev/null || echo "")
 fi
 
+# 确保 PATH 包含 sbin
+export PATH=$PATH:/sbin:/usr/sbin
+
 # 添加到 sudo 组
 if [ -n "$USERNAME" ] && id "$USERNAME" &>/dev/null; then
     usermod -aG sudo "$USERNAME"
