@@ -65,7 +65,7 @@ echo "=== CentOS/Rocky/AlmaLinux Initialization Completed ==="
 echo "sudo/wheel 权限已添加到 $USERNAME。要立即在当前 shell 会话生效："
 read -p "是否立即刷新当前 shell 权限？(y/n): " choice
 if [[ "$choice" == "y" || "$choice" == "Y" ]]; then
-    exec newgrp wheel
+    newgrp wheel
 else
     echo "您可以稍后手动执行 'newgrp wheel' 或重新登录用户会话来刷新权限"
 fi
