@@ -11,6 +11,13 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
+# 安装 curl（如果未安装）
+if ! command -v curl &>/dev/null; then
+    echo "curl 未安装，正在安装 curl..."
+    sudo apt update -y
+    sudo apt install -y curl
+fi
+
 # 更新并安装软件
 apt update -y
 apt install -y openssh-server sudo ufw
