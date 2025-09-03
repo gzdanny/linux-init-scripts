@@ -16,11 +16,11 @@ A collection of Linux initialization scripts for quickly setting up servers on D
 # 1. Switch to root user
 su -
 
-# 2. Run initialization script
-bash <(curl -fsSL https://raw.githubusercontent.com/gzdanny/linux-init-scripts/main/init.sh)
-
-# Or using wget
+# 2. Run initialization script (using wget, works on minimal systems)
 bash <(wget -qO- https://raw.githubusercontent.com/gzdanny/linux-init-scripts/main/init.sh)
+
+# 3. Or using curl (preferred if available)
+bash <(curl -fsSL https://raw.githubusercontent.com/gzdanny/linux-init-scripts/main/init.sh)
 ````
 
 ---
