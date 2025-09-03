@@ -10,25 +10,43 @@ A collection of Linux initialization scripts for quickly setting up servers on *
 
 ---
 
-## Quick Start
+## Prerequisites & Quick Start
 
-### Run with `curl`
+On a freshly installed Debian/Ubuntu system, follow these steps:
+
 ```bash
+# 1. Switch to root user
+su -
+
+# 2. Run the initialization script directly with curl
 bash <(curl -fsSL https://raw.githubusercontent.com/gzdanny/linux-init-scripts/main/init.sh)
-````
 
-### Run with `wget`
-
-```bash
+# Alternatively, using wget
 bash <(wget -qO- https://raw.githubusercontent.com/gzdanny/linux-init-scripts/main/init.sh)
-```
+````
 
 The script will:
 
-1. Detect your Linux distribution
-2. Install essential tools (SSH, sudo, UFW)
-3. Enable firewall and open SSH port
-4. Configure services to start on boot
+* Detect your Linux distribution
+* Install essential tools: **OpenSSH Server**, **sudo**, **UFW**
+* Enable firewall and open SSH port
+* Configure services to start on boot
+
+### Notes for sudo
+
+* If no non-root user exists yet, you will need to create one later and add it to the `sudo` group:
+
+```bash
+usermod -aG sudo <username>
+```
+
+Example:
+
+```bash
+usermod -aG sudo myuser
+```
+
+* Log out and log back in for the permission to take effect.
 
 ---
 
@@ -37,11 +55,11 @@ The script will:
 ```
 linux-init-scripts/
 │
-├── README.md                 # Project introduction
-├── init.sh                   # Entry script: detects OS, calls distro script
+├── README.md                  # Project introduction
+├── init.sh                    # Entry script: detects OS, calls distro script
 ├── init/
 │   ├── debian-init.sh         # Debian initialization
-│   ├── ubuntu-init.sh         # Ubuntu initialization (coming soon)
+│   ├── ubuntu-init.sh         # Ubuntu initialization (future)
 │   └── common.sh              # Shared functions
 └── utils/
     ├── detect_os.sh           # OS detection logic
