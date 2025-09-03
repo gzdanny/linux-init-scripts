@@ -1,8 +1,16 @@
 #!/bin/bash
 set -e
 
-# 获取当前脚本所在目录
 BASE_URL="https://raw.githubusercontent.com/gzdanny/linux-init-scripts/main"
+
+# 检测 root 权限
+if [ "$(id -u)" -ne 0 ]; then
+    echo "请先以 root 权限运行此脚本，例如："
+    echo "su -"
+    echo "然后再次执行："
+    echo "bash <(curl -fsSL ${BASE_URL}/init.sh)"
+    exit 1
+fi
 
 # 检测操作系统
 detect_os() {
@@ -25,15 +33,16 @@ detect_os() {
 }
 
 OS=$(detect_os)
-
 echo "Detected OS: $OS"
 
 # 根据 OS 执行对应初始化脚本
 case "$OS" in
     debian)
+        echo "Executing Debian initialization..."
         bash <(curl -fsSL ${BASE_URL}/init/debian-init.sh)
         ;;
     ubuntu)
+        echo "Executing Ubuntu initialization..."
         bash <(curl -fsSL ${BASE_URL}/init/ubuntu-init.sh)
         ;;
     *)
