@@ -3,13 +3,16 @@ set -e
 
 BASE_URL="https://raw.githubusercontent.com/gzdanny/linux-init-scripts/main/init"
 
-# 检测操作系统
+# 检测 OS
 detect_os() {
     if [ -f /etc/os-release ]; then
         . /etc/os-release
         case "$ID" in
-            debian|ubuntu)
-                echo "$ID"
+            debian)
+                echo "debian"
+                ;;
+            ubuntu)
+                echo "ubuntu"
                 ;;
             centos)
                 echo "centos"
@@ -29,10 +32,21 @@ detect_os() {
 OS=$(detect_os)
 echo "Detected OS: $OS"
 
-if [ "$OS" = "unsupported" ]; then
-    echo "Unsupported OS. Currently only Debian and Ubuntu are supported."
-    exit 1
-fi
-
-# 调用通用初始化脚本
-bash <(curl -fsSL ${BASE_URL}/common.sh) "$OS"
+case "$OS" in
+    debian)
+        bash <(curl -fsSL ${BASE_URL}/debian-init.sh)
+        ;;
+    ubuntu)
+        bash <(curl -fsSL ${BASE_URL}/debian-init.sh)  # Ubuntu 使用 Debian 脚本
+        ;;
+    centos)
+        bash <(curl -fsSL ${BASE_URL}/centos-init.sh)
+        ;;
+    rocky)
+        bash <(curl -fsSL ${BASE_URL}/centos-init.sh)  # Rocky 使用 CentOS 脚本
+        ;;
+    *)
+        echo "Unsupported OS"
+        exit 1
+        ;;
+esac
