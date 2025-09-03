@@ -3,11 +3,13 @@
 A collection of Linux initialization scripts for quickly setting up servers on Debian, Ubuntu, CentOS, and Rocky Linux.
 
 ## Features
-- 🐧 Multi-Distribution Support: Debian/Ubuntu and CentOS/Rocky
-- ⚡ One Command Setup: Install SSH, sudo, firewall automatically
-- 🔒 Basic Security: SSH + Firewall configured
-- 🧩 Modular Design: Each distro has its own script
-
+- 🐧 **Multi-Distribution Support**: Debian/Ubuntu and CentOS/Rocky  
+- ⚡ **One Command Setup**: Install SSH, sudo, firewall automatically  
+- 🔒 **Basic Security**: SSH + Firewall configured  
+- 🧩 **Modular Design**: Each distro has its own script  
+- 🖥 **Development Environments**: Android Studio, VSCode  
+- 🐳 **Docker + Portainer + Cockpit** installed automatically  
+- 🌈 **Enhanced Login Interface**: Shows IP, CPU, Memory, Distro with htop-style colors
 ---
 
 ## Quick Start
@@ -22,7 +24,19 @@ bash <(wget -qO- https://raw.githubusercontent.com/gzdanny/linux-init-scripts/ma
 # 3. Or using curl (preferred if available)
 bash <(curl -fsSL https://raw.githubusercontent.com/gzdanny/linux-init-scripts/main/init.sh)
 ````
+```bash
+# Android Studio
+bash <(wget -qO- https://raw.githubusercontent.com/gzdanny/linux-init-scripts/main/init/dev/android-studio-debian.sh)
 
+# VSCode
+bash <(wget -qO- https://raw.githubusercontent.com/gzdanny/linux-init-scripts/main/init/dev/vscode-debian.sh)
+
+# Docker + Portainer
+bash <(wget -qO- https://raw.githubusercontent.com/gzdanny/linux-init-scripts/main/init/dev/docker-debian.sh)
+
+# TTY-Enhance
+bash <(wget -qO- https://raw.githubusercontent.com/gzdanny/linux-init-scripts/main/init/enhance-login.sh)
+```
 ---
 
 ## Notes for sudo/wheel group
@@ -42,12 +56,17 @@ usermod -aG wheel myuser      # CentOS/Rocky
 ## Repository Structure
 
 ```
-linux-init-scripts/
-├── README.md
-├── init.sh
-└── init/
-    ├── debian-init.sh
-    └── centos-init.sh
+init/
+├─ dev/
+│  ├─ android-studio-debian.sh
+│  ├─ vscode-debian.sh
+│  └─ docker-debian.sh
+├─ debian-init.sh
+├─ centos-init.sh
+├─ enhance-login.sh
+init.sh
+LICENSE
+README.md
 ```
 
 ---
