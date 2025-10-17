@@ -29,6 +29,6 @@ sudo usermod -aG docker $USER
 echo "⚠️ 请重新登录或运行 'newgrp docker' 以应用权限变更"
 
 echo "🚀 Step 7: 启动 netshoot 容器用于网络测试..."
-docker run --rm -it --name nettest -p 8080:80 nicolaka/netshoot bash
+sudo docker run --rm -it --name nettest -p 8080:80 nicolaka/netshoot bash
 
 
