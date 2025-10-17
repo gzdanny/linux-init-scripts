@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "📦 安装 Docker 和 Docker Compose..."
+echo "📦 安装 Docker 和 Compose..."
 sudo apt update
 sudo apt install -y docker.io docker-compose
 
@@ -56,19 +56,16 @@ sudo ufw allow 9090/tcp comment 'xray-02 socks'
 sudo ufw allow 9091/tcp comment 'xray-02 vless'
 
 echo "🔧 修复 UFW 默认禁止转发的问题..."
-sudo sed -i 's/^DEFAULT_FORWARD_POLICY=.*/DEFAULT_FORWARD_POLICY="ACCEPT"/' /etc/default/ufw
+sudo bash -c 'sed -i "s/^DEFAULT_FORWARD_POLICY=.*/DEFAULT_FORWARD_POLICY=\"ACCEPT\"/" /etc/default/ufw'
 
-# 添加 docker0 网桥转发规则（如果未存在）
-if ! grep -q "docker0" /etc/ufw/before.rules; then
+# 插入 docker0 网桥转发规则（幂等处理）
+if ! sudo grep -q "docker0" /etc/ufw/before.rules; then
   echo "🔧 添加 docker0 网桥转发规则到 /etc/ufw/before.rules..."
 
-  sudo sed -i '/^*filter/a \
--A ufw-user-forward -i docker0 -j ACCEPT' /etc/ufw/before.rules
+  sudo bash -c 'sed -i "/^*filter/a -A ufw-user-forward -i docker0 -j ACCEPT" /etc/ufw/before.rules'
 
-  # 确保 ufw-user-forward 链存在
-  if ! grep -q ":ufw-user-forward" /etc/ufw/before.rules; then
-    sudo sed -i '/^*filter/a \
-:ufw-user-forward - [0:0]' /etc/ufw/before.rules
+  if ! sudo grep -q ":ufw-user-forward" /etc/ufw/before.rules; then
+    sudo bash -c 'sed -i "/^*filter/a :ufw-user-forward - [0:0]" /etc/ufw/before.rules'
   fi
 fi
 
