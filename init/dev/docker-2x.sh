@@ -73,7 +73,7 @@ EOF
 
 echo "🚀 启动 Xray 服务..."
 cd /opt/xray
-sudo docker-compose up -d
+sudo docker compose up -d
 
 echo "✅ 初始化完成。请编辑 /opt/xray/01/config.json 和 /opt/xray/02/config.json 配置每个实例。"
 
