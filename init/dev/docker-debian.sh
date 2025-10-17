@@ -1,64 +1,47 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
-echo "=== Installing Docker + Portainer + Cockpit (Debian) ==="
+echo "🔧 [1/6] 安装基础依赖..."
+sudo apt update
+sudo apt install -y ca-certificates curl gnupg lsb-release jq
 
-# 更新系统并安装依赖
-sudo apt update -y
-sudo apt install -y ca-certificates curl gnupg lsb-release ufw
+echo "🔐 [2/6] 添加 Docker 官方 GPG 密钥..."
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg | \
+  sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
-# -------------------------------
-# Docker 官方仓库安装 Docker 引擎
-# -------------------------------
-sudo mkdir -p /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-
+echo "📦 [3/6] 添加 Docker 官方软件源..."
 echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
-  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+  https://download.docker.com/linux/debian \
+  $(lsb_release -cs) stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-sudo apt update -y
+echo "📥 [4/6] 安装 Docker 引擎及组件..."
+sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-# 确认用户在 docker 组
-if id -nG "$USER" | grep -qw docker; then
-    echo -e "\033[32m用户 $USER 已在 docker 组中，继续后续部署。\033[0m"
-else
-    # 将当前用户加入 docker 组
-    echo -e "\033[33m用户 $USER 不在 docker 组，正在添加...\033[0m"
-    sudo usermod -aG docker "$USER"
-    echo -e "\033[31m请注销并重新登录以应用权限，然后重新运行此脚本！\033[0m"
-    exit 1
+echo "⚙️ [5/6] 配置 Docker 禁用自动修改 iptables..."
+sudo mkdir -p /etc/docker
+
+# 如果 daemon.json 不存在或为空，初始化为 {}
+if [ ! -s /etc/docker/daemon.json ]; then
+  echo '{}' | sudo tee /etc/docker/daemon.json > /dev/null
 fi
 
-# -------------------------------
-# 配置 ufw 防火墙
-# -------------------------------
-sudo ufw allow 9000/tcp   # Portainer HTTP
-sudo ufw allow 9443/tcp   # Portainer HTTPS
-sudo ufw allow 9090/tcp   # Cockpit
-sudo ufw reload
+# 使用 jq 更新 iptables 字段为 false
+sudo jq '.iptables = false' /etc/docker/daemon.json | \
+  sudo tee /etc/docker/daemon.json.tmp > /dev/null
+sudo mv /etc/docker/daemon.json.tmp /etc/docker/daemon.json
 
-# -------------------------------
-# 安装 Portainer
-# -------------------------------
-docker volume create portainer_data
+echo "🔄 [6/6] 重启 Docker 服务以应用配置..."
+sudo systemctl restart docker
 
-docker run -d \
-  -p 9000:9443 \
-  --name portainer \
-  --restart=always \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -v portainer_data:/data \
-  portainer/portainer-ce:latest
-
-# -------------------------------
-# 安装 Cockpit
-# -------------------------------
-sudo apt install -y cockpit
-sudo systemctl enable --now cockpit
-
-echo "=== Docker + Portainer + Cockpit Installation Completed ==="
-echo "Portainer Web UI: http://<server-ip>:9000 or https://<server-ip>:9443"
-echo "Cockpit Web UI: http://<server-ip>:9090"
-echo "Please log out and log back in for docker group permissions to take effect."
+echo ""
+echo "✅ Docker 安装与配置完成！"
+echo "⚠️ 注意：已禁用 Docker 自动修改 iptables。"
+echo "👉 请使用 UFW 显式开放容器端口，例如："
+echo "    sudo ufw allow 8080/tcp"
+echo ""
+echo "📎 建议：你可以使用 docker-compose + 明确的端口映射 + UFW 控制，确保网络行为完全可控。"
