@@ -19,7 +19,7 @@ for i in 01 02; do
   sudo mkdir -p /opt/xray/$i
   sudo touch /opt/xray/$i/config.json /opt/xray/$i/access.log /opt/xray/$i/error.log
   sudo chown -R 1500:1500 /opt/xray/$i
-  sudo chmod -R 750 /opt/xray/$i
+  sudo chmod -R 770 /opt/xray/$i
 done
 
 echo "📝 生成 docker-compose.yml（含注释）..."
