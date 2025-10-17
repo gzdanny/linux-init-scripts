@@ -75,3 +75,14 @@ cd /opt/xray
 sudo docker-compose up -d
 
 echo "✅ 初始化完成。请编辑 /opt/xray/01/config.json 和 /opt/xray/02/config.json 配置每个实例。"
+
+echo "👥 检查当前用户是否在 dockergrp 组中..."
+if ! id -nG "$USER" | grep -qw "dockergrp"; then
+  echo "🔧 当前用户不在 dockergrp 中，正在添加..."
+  sudo usermod -aG dockergrp "$USER"
+
+  echo "⚠️ 注意：组变更将在下次登录后生效。"
+  echo "👉 请重新登录终端或注销后再登录，以获得访问 /opt/xray/* 的权限。"
+else
+  echo "✅ 当前用户已在 dockergrp 中，无需修改。"
+fi
