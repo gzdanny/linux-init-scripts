@@ -19,8 +19,6 @@ done
 
 echo "📝 生成 docker-compose.yml（含注释）..."
 cat <<EOF | sudo tee /opt/xray/docker-compose.yml > /dev/null
-version: '3.9'
-
 services:
   xray-01:  # 实例 01：主服务
     image: ghcr.io/xtls/xray-core
