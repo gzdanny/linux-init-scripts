@@ -1,4 +1,9 @@
 #!/bin/bash
+# 这是一个docker的范例，演示如何在最小化安装的服务器初始化两个容器，并完成文件映射和服务端口映射。
+# 下载本脚本后，根据需要修改docker-compose.yml里端口映射部分 和 ufw放行端口部分，然后执行
+# chmod +x docker-2x.sh
+# ./docker-2x.sh
+
 set -e
 
 echo "📦 安装 Docker 和 Compose..."
