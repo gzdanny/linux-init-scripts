@@ -6,9 +6,28 @@
 
 set -e
 
-echo "📦 安装 Docker 和 Compose..."
-sudo apt update
-sudo apt install -y docker.io docker-compose
+echo "🔧 Step 1: 清理旧版本..."
+sudo apt-get remove -y docker docker.io docker-doc docker-compose podman-docker containerd runc || true
+
+echo "📦 Step 2: 安装依赖..."
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl gnupg lsb-release
+
+echo "🔐 Step 3: 添加 Docker GPG 密钥..."
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+echo "📦 Step 4: 添加 Docker 官方源..."
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] \
+  https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+echo "🔄 Step 5: 更新索引并安装 Docker..."
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 echo "👤 创建受限用户 dockeruser (UID 1500)..."
 sudo groupadd -g 1500 dockergrp || true
@@ -51,29 +70,6 @@ services:
       - /opt/xray/02/error.log:/var/log/xray/error.log
     restart: always
 EOF
-
-echo "🔐 配置 UFW 防火墙规则..."
-sudo ufw allow 9080/tcp comment 'xray-01 socks'
-sudo ufw allow 9081/tcp comment 'xray-01 vless'
-sudo ufw allow 9090/tcp comment 'xray-02 socks'
-sudo ufw allow 9091/tcp comment 'xray-02 vless'
-
-echo "🔧 修复 UFW 默认禁止转发的问题..."
-sudo bash -c 'sed -i "s/^DEFAULT_FORWARD_POLICY=.*/DEFAULT_FORWARD_POLICY=\"ACCEPT\"/" /etc/default/ufw'
-
-# 插入 docker0 网桥转发规则（幂等处理）
-if ! sudo grep -q "docker0" /etc/ufw/before.rules; then
-  echo "🔧 添加 docker0 网桥转发规则到 /etc/ufw/before.rules..."
-
-  sudo bash -c 'sed -i "/^*filter/a -A ufw-user-forward -i docker0 -j ACCEPT" /etc/ufw/before.rules'
-
-  if ! sudo grep -q ":ufw-user-forward" /etc/ufw/before.rules; then
-    sudo bash -c 'sed -i "/^*filter/a :ufw-user-forward - [0:0]" /etc/ufw/before.rules'
-  fi
-fi
-
-echo "🔄 重载 UFW..."
-sudo ufw reload
 
 echo "🚀 启动 Xray 服务..."
 cd /opt/xray
